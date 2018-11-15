@@ -5,6 +5,8 @@
   "dependencies": {
     "AngularJS": "^1.7.5",
     "angular-chart.js": "^1.1.1",
+    "jspdf": "^1.4.1",
+    "jspdf-autotable": "^2.3.5",
     "npm": "^6.4.1"
   }
 }

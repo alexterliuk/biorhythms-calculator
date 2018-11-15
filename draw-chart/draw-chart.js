@@ -40,7 +40,7 @@ myApp
     $scope.data = [];
     $scope.labels = [];
 
-    $scope.$on('check', function($filter) {
+    $scope.$on('check', function() {
       $scope.data = [
         calculator.physForChart,
         calculator.emotForChart,

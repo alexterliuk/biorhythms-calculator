@@ -3,7 +3,8 @@
   <form>
     <label for="birthday">Please enter your birthday:</label>
     <input type="date" id="birthday" ng-model="$ctrl.birthday" max="{{$ctrl.birthdayMax | date:'yyyy-MM-dd'}}" min="{{$ctrl.birthdayMin | date:'yyyy-MM-dd'}}">
-    <button id="getBioBtn" ng-click="$ctrl.getYourResult($ctrl.birthday)">calculate</button>
+    <button class="btn" id="calcBtn" ng-click="$ctrl.getYourResult($ctrl.birthday)">calculate</button>
+    <button class="btn" id="PDFBtn" ng-click="$ctrl.getPDF()">get PDF</button>
   </form>
   <p ng-bind="$ctrl.howManyLived" ng-show="$ctrl.tableData"></p>
 </div>

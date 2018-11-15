@@ -11,15 +11,45 @@ function BiorhythmsCalcController($scope, $rootScope, $filter, $timeout, $log, c
   $ctrl.birthdayMax = new Date();
   $ctrl.birthdayMin = new Date('Jan 1 1900');
   $ctrl.birthday = null;
-  $log.log('"calculator" from BCController: ', calculator);
   $scope.show = 'not-showed';
-  $log.log('"$scope.show" from BCController: ', $scope.show);
 
   $scope.$on('show', function() {
     if ($scope.show === 'not-showed') {
       $scope.show = 'showed';
     }
   });
+
+  $ctrl.getPDF = function() {
+    var doc = new jsPDF('p', 'pt');
+    var daArgs = Array.from(calculator.datesForChart);
+    var phArgs = Array.from(calculator.physForChart);
+    var emArgs = Array.from(calculator.emotForChart);
+    var inArgs = Array.from(calculator.intelForChart);
+
+    function makeArr(dates, a, b, c,) {
+      var newArr = [];
+      var pos = -1;
+      while (dates.length > 0) {
+        pos += 1;
+        newArr.push(dates.splice(0,1));
+        newArr[pos].push(a.shift() + '%');
+        newArr[pos].push(b.shift() + '%');
+        newArr[pos].push(c.shift() + '%');
+      }
+      return newArr;
+    }
+
+    var columns = ['Date', 'Physical', 'Emotional', 'Intellectual'];
+    var rows = makeArr(daArgs, phArgs, emArgs, inArgs);
+    doc.autoTable(columns, rows);
+    var range = document.createRange();
+    var canvas = range.startContainer.getElementsByTagName('canvas')[0];
+    doc.addPage();
+    doc.addImage(canvas, 'PNG', 20, 20, 500, 240, 'no alias', 'NONE', 0);
+    // or chart in larger size:
+    // doc.addImage(canvas, 'PNG', 120, -400, 700, 450, 'no alias', 'NONE', -90);
+    doc.save('yourbiorhythms.pdf');
+  };
 
   $ctrl.getColor = function(num) {
     if (num > 0) {
@@ -38,12 +68,12 @@ function BiorhythmsCalcController($scope, $rootScope, $filter, $timeout, $log, c
     $ctrl.howManyLived = 'You are ' + result.daysLived + ' days, ' + result.weeksLived + ' weeks, and ' + result.yearsLived + ' years old by now.';
     $ctrl.tableData = result.biorhythmsData;
 
-    function firstCtrl($scope) {
+    function informAboutInput($scope) {
       $scope.$broadcast('check', [result.physForChart, result.emotForChart, result.intelForChart]);
     }
 
-    $timeout(function () {
-      firstCtrl($scope);
+    $timeout(function() {
+      informAboutInput($scope);
     }, 100);
   };
 }
