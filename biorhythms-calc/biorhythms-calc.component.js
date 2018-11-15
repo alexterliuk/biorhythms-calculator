@@ -5,15 +5,23 @@ angular.module('myApp').component('biorhythmsCalc', {
   controller: BiorhythmsCalcController
 });
 
-function BiorhythmsCalcController($scope, $filter, $log, calculator) {
+function BiorhythmsCalcController($scope, $rootScope, $filter, $timeout, $log, calculator) {
   var $ctrl = this;
   var result = 0;
   $ctrl.birthdayMax = new Date();
   $ctrl.birthdayMin = new Date('Jan 1 1900');
   $ctrl.birthday = null;
-  $log.log(calculator);
+  $log.log('"calculator" from BCController: ', calculator);
+  $scope.show = 'not-showed';
+  $log.log('"$scope.show" from BCController: ', $scope.show);
 
-  $ctrl.setColor = function(num) {
+  $scope.$on('show', function() {
+    if ($scope.show === 'not-showed') {
+      $scope.show = 'showed';
+    }
+  });
+
+  $ctrl.getColor = function(num) {
     if (num > 0) {
       return 'positive';
     } else if (num < 0) {
@@ -28,7 +36,14 @@ function BiorhythmsCalcController($scope, $filter, $log, calculator) {
     result = calculator.getValues($ctrl.birthday);
     $log.log('result: ', result);
     $ctrl.howManyLived = 'You are ' + result.daysLived + ' days, ' + result.weeksLived + ' weeks, and ' + result.yearsLived + ' years old by now.';
-    $ctrl.calculated = true;
     $ctrl.tableData = result.biorhythmsData;
+
+    function firstCtrl($scope) {
+      $scope.$broadcast('check', [result.physForChart, result.emotForChart, result.intelForChart]);
+    }
+
+    $timeout(function () {
+      firstCtrl($scope);
+    }, 100);
   };
 }

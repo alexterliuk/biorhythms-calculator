@@ -1,58 +1,74 @@
 'use strict';
 
-myApp.factory('calculator', ['$log', function($log) {
+myApp.factory('calculator', ['$log', '$filter', function($log, $filter) {
   var calculator = {};
 
   calculator.getValues = function(birthday) {
-    var biorhythmsData = {};
+    var biorhythmsData = [];
     var now = new Date();
     var thirtyDays = Date.now() + (86400000 * 30);
 
-    if (Object.keys(biorhythmsData).length === 0) {
-      var day = 0;
+    if (!biorhythmsData[0]) {
       for (var x = Date.now(); x < thirtyDays; x += 86400000) {
-        biorhythmsData['day' + (day += 1)] = [new Date(x), []];
+        var day = new Date(x);
+        biorhythmsData.push({date: day, physical: null, emotional: null, intellectual: null});
       }
     }
 
-    var timeBetw1970AndBirthday = Date.now() - birthday;
-    var daysLived = 0;
-    var weeksLived = 0;
+    function getHowManyLived(birthday) {
+      var timeBetw1970AndBirthday = Date.now() - birthday;
+      var daysLived = 0;
+      var weeksLived = 0;
 
-    if (timeBetw1970AndBirthday < 0) { /* if born before Jan 1 1970 */
-      daysLived = Math.floor((Math.abs(timeBetw1970AndBirthday) + Date.now()) / 1000 / 86400);
-      weeksLived = Math.floor(daysLived / 7);
-    } else {
-      daysLived = Math.floor(timeBetw1970AndBirthday / 1000 / 86400);
-      weeksLived = Math.floor(daysLived / 7);
+      if (timeBetw1970AndBirthday < 0) { /* if born before Jan 1 1970 */
+        daysLived = Math.floor((Math.abs(timeBetw1970AndBirthday) + Date.now()) / 1000 / 86400);
+        weeksLived = Math.floor(daysLived / 7);
+      } else {
+        daysLived = Math.floor(timeBetw1970AndBirthday / 1000 / 86400);
+        weeksLived = Math.floor(daysLived / 7);
+      }
+
+      var yearsLived = now.getFullYear() - birthday.getFullYear();
+      var monthsCompared = now.getMonth() - birthday.getMonth();
+      var datesCompared = now.getDate() - birthday.getDate();
+
+      if (yearsLived > 0 && monthsCompared <= 0 && datesCompared < 0) {
+        yearsLived -= 1;
+      }
+
+      return {daysLived: daysLived, weeksLived: weeksLived, yearsLived: yearsLived};
     }
 
-    var yearsLived = now.getFullYear() - birthday.getFullYear();
-    var monthsCompared = now.getMonth() - birthday.getMonth();
-    var datesCompared = now.getDate() - birthday.getDate();
+    var howManyLived = getHowManyLived(birthday);
 
-    if (yearsLived > 0 && monthsCompared <= 0 && datesCompared < 0) {
-      yearsLived -= 1;
-    }
+    var days = howManyLived.daysLived;
 
-    var days = daysLived;
-    var whatDay = 1;
+    // prevent bulking values in the array from previous function calls
+    calculator.datesForChart = [];
+    calculator.physForChart = [];
+    calculator.emotForChart = [];
+    calculator.intelForChart = [];
 
-    for (var i = 0; i < 30; i++) {
-      // prevent bulking values in the array from previous function calls
-      biorhythmsData['day' + whatDay][1] = [];
-      for (var y = 0; y < 3; y++) {
-        // physical biorhythm lasts 23 days, emotional - 28, intellectual - 33
-        var biorhythm = [23, 28, 33];
-        var valOfBior = Math.sin(2 * Math.PI * (days / biorhythm[y]));
-        biorhythmsData['day' + whatDay][1].push(Math.round(valOfBior * 100));
+    for (var n = 0; n < 30; n++) {
+      calculator.datesForChart.push($filter('date')(biorhythmsData[n].date, 'd MMM'));
+      var biorhythm = [23, 'physical', 'physForChart', 28, 'emotional', 'emotForChart', 33, 'intellectual', 'intelForChart'];
+      for (var k = 0; k < 9; k += 3) {
+        biorhythmsData[n][biorhythm[k+1]] = Math.round(Math.sin(2 * Math.PI * (days / biorhythm[k])) * 100);
+        calculator[biorhythm[k+2]].push(biorhythmsData[n][biorhythm[k+1]]);
       }
       days += 1;
-      whatDay += 1;
     }
 
-    $log.log(biorhythmsData);
-    return {daysLived: daysLived, weeksLived: weeksLived, yearsLived: yearsLived, biorhythmsData};
+    return {
+      daysLived: howManyLived.daysLived,
+      weeksLived: howManyLived.weeksLived,
+      yearsLived: howManyLived.yearsLived,
+      biorhythmsData: biorhythmsData,
+      physForChart: calculator.physForChart,
+      emotForChart: calculator.emotForChart,
+      intelForChart: calculator.intelForChart,
+      datesForChart: calculator.datesForChart
+    };
   };
 
   return calculator;

@@ -7,13 +7,44 @@ h1, .table-bio td {
   text-align: center;
 }
 
-.centrify {
+biorhythms-calc, .outer-cont, .table-bio {
+  width: 100%;
+}
+
+.form-cont {
+  text-align: center;
+}
+
+.not-showed {
+  display: none;
+}
+
+.showed {
+  display: flex;
+  justify-content: center;
+}
+
+.table-cont {
   width: 480px;
-  margin: 0 auto 15px;
+  min-width: 400px;
+  height: 640px;
+  margin: 0 2rem 1rem;
+  overflow: auto;
+  border-bottom: 1px solid lightgrey;
+  border-top: 1px solid lightgrey;
+}
+
+.chart-cont {
+  width: 800px;
+  min-width: 720px;
+  position: relative;
+  margin: 0 2rem 1rem;
 }
 
 .table-bio {
-  border: 1px solid lightgrey;
+  margin: 0 auto;
+  border-right: 1px solid lightgrey;
+  border-left: 1px solid lightgrey;
 }
 
 .table-bio tbody tr:nth-child(even) {
