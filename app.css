@@ -35,11 +35,7 @@ biorhythms-calc, .outer-cont, .table-bio {
   cursor: pointer;
 }
 
-.not-showed {
-  display: none;
-}
-
-.showed {
+.outer-cont {
   display: flex;
   justify-content: space-evenly;
   flex-wrap: wrap-reverse;

@@ -21,19 +21,18 @@ function BiorhythmsCalc($scope, $filter, $timeout, $log, calculateBiorhythms, ca
   bc.birthday = null;
   bc.birthdayMax = new Date();
   bc.birthdayMin = new Date('Jan 1 1900');
-  bc.show = 'not-showed';
 
   bc.getPDF = function() {
     if (!bc.birthday) {
       return;
     }
     var doc = new jsPDF('p', 'pt');
-    var daArgs = Array.from(bc.labels);
-    var phArgs = Array.from(bc.data[0]);
-    var emArgs = Array.from(bc.data[1]);
-    var inArgs = Array.from(bc.data[2]);
+    var daArgs = bc.labels;
+    var phArgs = bc.data[0];
+    var emArgs = bc.data[1];
+    var inArgs = bc.data[2];
 
-    function makeArr(dates, a, b, c,) {
+    function makeArr(dates, a, b, c) {
       var newArr = [];
       for (var y = 0; y < dates.length; y++) {
         newArr.push([]);
@@ -51,8 +50,7 @@ function BiorhythmsCalc($scope, $filter, $timeout, $log, calculateBiorhythms, ca
     // doc.text('Today: ' + $filter('date')(bc.birthdayMax, 'dd.MM.yyyy'), 40, 780, {});
     doc.autoTable(columns, rows);
 
-    var range = document.createRange();
-    var canvas = range.startContainer.getElementsByTagName('canvas')[0];
+    var canvas = document.getElementsByTagName('canvas')[0];
     doc.addPage();
     doc.addImage(canvas, 'PNG', 20, 20, 500, 240, 'no alias', 'NONE', 0);
     // or chart in larger size:
@@ -74,15 +72,12 @@ function BiorhythmsCalc($scope, $filter, $timeout, $log, calculateBiorhythms, ca
     if (!bc.birthday) {
       return;
     }
-    var lived = calculateTimeLived(birthday);
-    $log.log('lived: ', lived);
-    var biorhythms = calculateBiorhythms(lived.days);
-    $log.log('biorhythms: ', biorhythms);
+    bc.lived = calculateTimeLived(birthday);
+    $log.log('lived: ', bc.lived);
+    bc.tableData = calculateBiorhythms(bc.lived.days);
+    $log.log('biorhythms: ', bc.tableData);
 
-    bc.times = 'You are ' + lived.days + ' days, ' + lived.weeks + ' weeks, and ' + lived.years + ' years old by now.';
-    bc.tableData = biorhythms;
-
-    var bioForChart = convertForChart(biorhythms);
+    var bioForChart = convertForChart(bc.tableData);
 
     function convertForChart(bior) {
       var chartVals = [[], [], [], []];
@@ -90,9 +85,7 @@ function BiorhythmsCalc($scope, $filter, $timeout, $log, calculateBiorhythms, ca
 
       for (var obj = 0; obj < bior.length; obj++) {
         for (var num = 0; num < chartVals.length; num++) {
-          !num ?
-            chartVals[num].push($filter('date')(bior[obj][keys[num]], 'd MMM')) :
-            chartVals[num].push(bior[obj][keys[num]]);
+          chartVals[num].push(!num ? $filter('date')(bior[obj][keys[num]], 'd MMM') : bior[obj][keys[num]]);
         }
       }
 
@@ -101,10 +94,6 @@ function BiorhythmsCalc($scope, $filter, $timeout, $log, calculateBiorhythms, ca
         labels: chartVals[0],
         series: ['Physical', 'Emotional', 'Intellectual']
       };
-    }
-
-    if (bc.show === 'not-showed'){
-      bc.show = 'showed';
     }
 
     bc.data = bioForChart.data;

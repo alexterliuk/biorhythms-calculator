@@ -5,9 +5,11 @@
     <input type="date" id="birthday" ng-model="bc.birthday" max="{{bc.birthdayMax | date:'yyyy-MM-dd'}}" min="{{bc.birthdayMin | date:'yyyy-MM-dd'}}">
   </form>
   <button class="btn" id="PDFBtn" ng-click="bc.getPDF()">download results in PDF</button>
-  <p ng-bind="bc.times" ng-show="bc.tableData"></p>
+  <p ng-if="bc.tableData">
+    You are {{bc.lived.days}} days, {{bc.lived.weeks}} weeks, and {{bc.lived.years}} years old by now.
+  </p>
 </div>
-<div class="outer-cont" ng-class="bc.show">
+<div class="outer-cont" ng-if="bc.tableData">
   <div class="table-cont">
     <table class="table-bio">
       <thead>
