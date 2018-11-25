@@ -6,7 +6,7 @@ angular.module('myApp').component('biorhythmsCalc', {
   controllerAs: 'bc'
 });
 
-function BiorhythmsCalc($scope, $filter, $timeout, $log, calculateBiorhythms, calculateTimeLived) {
+function BiorhythmsCalc($scope, $filter, $log, calculateBiorhythms, calculateTimeLived) {
   var bc = this;
   $scope.$watch('bc.birthday', watchBirthday, true);
 
@@ -51,6 +51,7 @@ function BiorhythmsCalc($scope, $filter, $timeout, $log, calculateBiorhythms, ca
     doc.autoTable(columns, rows);
 
     var canvas = document.getElementsByTagName('canvas')[0];
+
     doc.addPage();
     doc.addImage(canvas, 'PNG', 20, 20, 500, 240, 'no alias', 'NONE', 0);
     // or chart in larger size:
