@@ -9,10 +9,7 @@ myApp
       elements: {
         line: {
           fill: false,
-          tension: 0.1,
-          borderWidth: 2,
-          borderJoinStyle: 'round',
-          capBezierPoints: true
+          borderWidth: 2
         },
         point: {
           radius: 3,
