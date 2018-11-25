@@ -2,48 +2,55 @@
 
 angular.module('myApp').component('biorhythmsCalc', {
   templateUrl: 'biorhythms-calc/biorhythms-calc.template.html',
-  controller: BiorhythmsCalcController
+  controller: BiorhythmsCalc,
+  controllerAs: 'bc'
 });
 
-function BiorhythmsCalcController($scope, $rootScope, $filter, $timeout, $log, calculator) {
-  var $ctrl = this;
-  var result = 0;
-  $ctrl.birthdayMax = new Date();
-  $ctrl.birthdayMin = new Date('Jan 1 1900');
-  $ctrl.birthday = null;
-  $scope.show = 'not-showed';
+function BiorhythmsCalc($scope, $filter, $timeout, $log, calculateBiorhythms, calculateTimeLived) {
+  var bc = this;
+  $scope.$watch('bc.birthday', watchBirthday, true);
 
-  $scope.$on('show', function() {
-    if ($scope.show === 'not-showed') {
-      $scope.show = 'showed';
+  function watchBirthday (newBirthday, oldBirthday) {
+    if (newBirthday) {
+      bc.getYourResult(newBirthday);
+      $log.log('newBirthday: ', newBirthday);
+      $log.log('oldBirthday: ', oldBirthday);
     }
-  });
+  }
 
-  $ctrl.getPDF = function() {
+  bc.birthday = null;
+  bc.birthdayMax = new Date();
+  bc.birthdayMin = new Date('Jan 1 1900');
+
+  bc.getPDF = function() {
+    if (!bc.birthday) {
+      return;
+    }
     var doc = new jsPDF('p', 'pt');
-    var daArgs = Array.from(calculator.datesForChart);
-    var phArgs = Array.from(calculator.physForChart);
-    var emArgs = Array.from(calculator.emotForChart);
-    var inArgs = Array.from(calculator.intelForChart);
+    var daArgs = bc.labels;
+    var phArgs = bc.data[0];
+    var emArgs = bc.data[1];
+    var inArgs = bc.data[2];
 
-    function makeArr(dates, a, b, c,) {
+    function makeArr(dates, a, b, c) {
       var newArr = [];
-      var pos = -1;
-      while (dates.length > 0) {
-        pos += 1;
-        newArr.push(dates.splice(0,1));
-        newArr[pos].push(a.shift() + '%');
-        newArr[pos].push(b.shift() + '%');
-        newArr[pos].push(c.shift() + '%');
+      for (var y = 0; y < dates.length; y++) {
+        newArr.push([]);
+        newArr[y].push(dates[y]);
+        newArr[y].push(a[y] + '%');
+        newArr[y].push(b[y] + '%');
+        newArr[y].push(c[y] + '%');
       }
       return newArr;
     }
 
     var columns = ['Date', 'Physical', 'Emotional', 'Intellectual'];
     var rows = makeArr(daArgs, phArgs, emArgs, inArgs);
+    // doc.text('Biorhythms cycles record on the given birthday: ' + $filter('date')(bc.birthday, 'dd.MM.yyyy'), 40, 750, {});
+    // doc.text('Today: ' + $filter('date')(bc.birthdayMax, 'dd.MM.yyyy'), 40, 780, {});
     doc.autoTable(columns, rows);
-    var range = document.createRange();
-    var canvas = range.startContainer.getElementsByTagName('canvas')[0];
+
+    var canvas = document.getElementsByTagName('canvas')[0];
     doc.addPage();
     doc.addImage(canvas, 'PNG', 20, 20, 500, 240, 'no alias', 'NONE', 0);
     // or chart in larger size:
@@ -51,7 +58,7 @@ function BiorhythmsCalcController($scope, $rootScope, $filter, $timeout, $log, c
     doc.save('yourbiorhythms.pdf');
   };
 
-  $ctrl.getColor = function(num) {
+  bc.getColor = function(num) {
     if (num > 0) {
       return 'positive';
     } else if (num < 0) {
@@ -61,19 +68,36 @@ function BiorhythmsCalcController($scope, $rootScope, $filter, $timeout, $log, c
     }
   };
 
-  $ctrl.getYourResult = function () {
-    $log.log('A user submitted birthday: ', $filter('date')($ctrl.birthday));
-    result = calculator.getValues($ctrl.birthday);
-    $log.log('result: ', result);
-    $ctrl.howManyLived = 'You are ' + result.daysLived + ' days, ' + result.weeksLived + ' weeks, and ' + result.yearsLived + ' years old by now.';
-    $ctrl.tableData = result.biorhythmsData;
+  bc.getYourResult = function (birthday) {
+    if (!bc.birthday) {
+      return;
+    }
+    bc.lived = calculateTimeLived(birthday);
+    $log.log('lived: ', bc.lived);
+    bc.tableData = calculateBiorhythms(bc.lived.days);
+    $log.log('biorhythms: ', bc.tableData);
 
-    function informAboutInput($scope) {
-      $scope.$broadcast('check', [result.physForChart, result.emotForChart, result.intelForChart]);
+    var bioForChart = convertForChart(bc.tableData);
+
+    function convertForChart(bior) {
+      var chartVals = [[], [], [], []];
+      var keys = Object.keys(bior[0]);
+
+      for (var obj = 0; obj < bior.length; obj++) {
+        for (var num = 0; num < chartVals.length; num++) {
+          chartVals[num].push(!num ? $filter('date')(bior[obj][keys[num]], 'd MMM') : bior[obj][keys[num]]);
+        }
+      }
+
+      return {
+        data: [chartVals[1], chartVals[2], chartVals[3]],
+        labels: chartVals[0],
+        series: ['Physical', 'Emotional', 'Intellectual']
+      };
     }
 
-    $timeout(function() {
-      informAboutInput($scope);
-    }, 100);
+    bc.data = bioForChart.data;
+    bc.labels = bioForChart.labels;
+    bc.series = bioForChart.series;
   };
 }

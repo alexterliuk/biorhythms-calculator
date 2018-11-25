@@ -2,34 +2,35 @@
 <div class="form-cont">
   <form>
     <label for="birthday">Please enter your birthday:</label>
-    <input type="date" id="birthday" ng-model="$ctrl.birthday" max="{{$ctrl.birthdayMax | date:'yyyy-MM-dd'}}" min="{{$ctrl.birthdayMin | date:'yyyy-MM-dd'}}">
-    <button class="btn" id="calcBtn" ng-click="$ctrl.getYourResult($ctrl.birthday)">calculate</button>
-    <button class="btn" id="PDFBtn" ng-click="$ctrl.getPDF()">get PDF</button>
+    <input type="date" id="birthday" ng-model="bc.birthday" max="{{bc.birthdayMax | date:'yyyy-MM-dd'}}" min="{{bc.birthdayMin | date:'yyyy-MM-dd'}}">
   </form>
-  <p ng-bind="$ctrl.howManyLived" ng-show="$ctrl.tableData"></p>
+  <button class="btn" id="PDFBtn" ng-click="bc.getPDF()">download results in PDF</button>
+  <p ng-if="bc.tableData">
+    You are {{bc.lived.days}} days, {{bc.lived.weeks}} weeks, and {{bc.lived.years}} years old by now.
+  </p>
 </div>
-<div class="outer-cont" ng-class="show">
+<div class="outer-cont" ng-if="bc.tableData">
   <div class="table-cont">
-    <table class="table-bio centrify">
+    <table class="table-bio">
       <thead>
-        <tr>
-          <th>Date</th>
-          <th>Physical</th>
-          <th>Emotional</th>
-          <th>Intellectual</th>
-        </tr>
+      <tr>
+        <th>Date</th>
+        <th>Physical</th>
+        <th>Emotional</th>
+        <th>Intellectual</th>
+      </tr>
       </thead>
       <tbody>
-        <tr ng-repeat="item in $ctrl.tableData">
-          <td>{{item.date | date:'d MMM'}}</td>
-          <td ng-class="$ctrl.getColor(item.physical)">{{item.physical + '%'}}</td>
-          <td ng-class="$ctrl.getColor(item.emotional)">{{item.emotional + '%'}}</td>
-          <td ng-class="$ctrl.getColor(item.intellectual)">{{item.intellectual + '%'}}</td>
-        </tr>
+      <tr ng-repeat="item in bc.tableData">
+        <td>{{item.date | date:'d MMM'}}</td>
+        <td ng-class="bc.getColor(item.physical)">{{item.physical + '%'}}</td>
+        <td ng-class="bc.getColor(item.emotional)">{{item.emotional + '%'}}</td>
+        <td ng-class="bc.getColor(item.intellectual)">{{item.intellectual + '%'}}</td>
+      </tr>
       </tbody>
     </table>
   </div>
-  <div class="chart-cont" ng-controller="LineCtrl">
-    <canvas class="chart chart-line" chart-data="data" chart-labels="labels" chart-series="series" chart-click="onClick"></canvas>
+  <div class="chart-cont">
+    <canvas class="chart chart-line" chart-data="bc.data" chart-labels="bc.labels" chart-series="bc.series" chart-click="bc.onClick"></canvas>
   </div>
 </div>

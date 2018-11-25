@@ -3,20 +3,28 @@ html {
   font-size: 16px;
 }
 
-h1, .table-bio td {
+h1, .table-bio td, .form-cont {
   text-align: center;
+}
+
+h1, p, input, button, .table-cont, .chart-cont {
+  margin: 0 0 1.34rem;
+}
+
+h1, .form-cont {
+  margin-top: 1.34rem;
+}
+
+.form-cont {
+  margin-bottom: 2.68rem;
 }
 
 biorhythms-calc, .outer-cont, .table-bio {
   width: 100%;
 }
 
-.form-cont {
-  text-align: center;
-}
-
 .btn {
-  font-size: 0.958rem;
+  font-size: 0.958em;
   font-weight: 500;
   font-family: inherit;
   text-transform: uppercase;
@@ -27,33 +35,26 @@ biorhythms-calc, .outer-cont, .table-bio {
   cursor: pointer;
 }
 
-.not-showed {
-  display: none;
+.outer-cont {
+  display: flex;
+  justify-content: space-evenly;
+  flex-wrap: wrap-reverse;
 }
 
-.showed {
-  display: flex;
-  justify-content: center;
+.chart-cont {
+  width: 50rem;
+  min-width: 20rem;
 }
 
 .table-cont {
-  width: 480px;
-  min-width: 400px;
-  height: 640px;
-  margin: 0 2rem 1rem;
+  width: 30rem;
+  height: 40rem;
   overflow: auto;
   border-bottom: 1px solid lightgrey;
   border-top: 1px solid lightgrey;
 }
 
-.chart-cont {
-  width: 800px;
-  min-width: 720px;
-  margin: 0 2rem 1rem;
-}
-
 .table-bio {
-  margin: 0 auto;
   border-right: 1px solid lightgrey;
   border-left: 1px solid lightgrey;
 }
@@ -66,12 +67,13 @@ biorhythms-calc, .outer-cont, .table-bio {
   background: lightgrey;
 }
 
-table.table-bio th {
+.table-bio th {
   text-transform: uppercase;
 }
 
-table.table-bio th, table.table-bio td {
+.table-bio th, .table-bio td {
   padding: 4px 0;
+  width: 7.3rem; /* 117px */
 }
 
 .positive {
