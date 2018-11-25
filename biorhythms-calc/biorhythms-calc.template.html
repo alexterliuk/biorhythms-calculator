@@ -13,20 +13,20 @@
   <div class="table-cont">
     <table class="table-bio">
       <thead>
-      <tr>
-        <th>Date</th>
-        <th>Physical</th>
-        <th>Emotional</th>
-        <th>Intellectual</th>
-      </tr>
+        <tr>
+          <th>Date</th>
+          <th>Physical</th>
+          <th>Emotional</th>
+          <th>Intellectual</th>
+        </tr>
       </thead>
       <tbody>
-      <tr ng-repeat="item in bc.tableData">
-        <td>{{item.date | date:'d MMM'}}</td>
-        <td ng-class="bc.getColor(item.physical)">{{item.physical + '%'}}</td>
-        <td ng-class="bc.getColor(item.emotional)">{{item.emotional + '%'}}</td>
-        <td ng-class="bc.getColor(item.intellectual)">{{item.intellectual + '%'}}</td>
-      </tr>
+        <tr ng-repeat="item in bc.tableData">
+          <td>{{item.date | date:'d MMM'}}</td>
+          <td ng-class="bc.getColor(item.physical)">{{item.physical + '%'}}</td>
+          <td ng-class="bc.getColor(item.emotional)">{{item.emotional + '%'}}</td>
+          <td ng-class="bc.getColor(item.intellectual)">{{item.intellectual + '%'}}</td>
+        </tr>
       </tbody>
     </table>
   </div>
